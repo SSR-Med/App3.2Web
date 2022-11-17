@@ -36,7 +36,6 @@ if choose == "Creación usuarios":
             usuarios[nombreUsuario] = {}
         usuarios[nombreUsuario][pelicula] = CalificacionPelicula
         open('Recursos/madeUsers.json', 'w').close()
-        st.write(str(usuarios))
         with open('Recursos/madeUsers.json', 'w') as fp:
             json.dump(usuarios, fp)
 elif choose == "Reiniciar usuarios":
