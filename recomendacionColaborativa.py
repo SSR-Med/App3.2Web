@@ -53,6 +53,8 @@ def recomendar(datasetSelectBox, usuario, caso):
             dataset = dataset.append(datAppend, ignore_index=True)
     else:
         dataset = pd.read_csv("Recursos/Usuarios.csv")
+    # Borrar columnas totalmente vacías
+    dataset.dropna(how='all', axis=1, inplace=True)
     # Seleccionamos la fila del usuario
     rowUsuario = dataset.loc[dataset["Usuario"] == usuario]
     # Borrar la fila del dataset
