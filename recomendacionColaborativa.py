@@ -46,10 +46,10 @@ def recomendar(datasetSelectBox, usuario, caso):
         peliculasDisponibles = pd.read_csv("Recursos/Consulta/Consulta.csv")
         peliculas = list(sorted(list(peliculasDisponibles["Titulo"])))
         dataset = pd.DataFrame(columns=["Usuario"]+peliculas)
-        for usuario in datasetSelectBox:
-            datAppend = {"Usuario": usuario}
-            for pelicula in datasetSelectBox[usuario]:
-                datAppend[pelicula] = datasetSelectBox[usuario][pelicula]
+        for usuariox in datasetSelectBox:
+            datAppend = {"Usuario": usuariox}
+            for pelicula in datasetSelectBox[usuariox]:
+                datAppend[pelicula] = datasetSelectBox[usuariox][pelicula]
             dataset = dataset.append(datAppend, ignore_index=True)
     else:
         dataset = pd.read_csv("Recursos/Usuarios.csv")
@@ -61,9 +61,15 @@ def recomendar(datasetSelectBox, usuario, caso):
     dataset.drop(dataset[dataset["Usuario"] == usuario].index, inplace=True)
     dataset.reset_index(inplace=True)
     dataset.drop('index', axis=1, inplace=True)
+    # Borrar las columnas que no puedan dar recomendaciones
+    dataset.dropna(how='all', axis=1, inplace=True)
+    rowUsuario = rowUsuario[list(dataset.columns)]
+    print(dataset)
+    print(rowUsuario)
     # Ahora se debe de utilizar el algoritmo de recomendaciones como tal
     dataset["Similitud"] = dataset.apply(
         lambda row: similitudMaker(row, rowUsuario), axis=1)
+    print(dataset)
     datasetWeight = weightMatrix(dataset)
     sumWeightRating = {pelicula: sum(np.array(datasetWeight[pelicula], dtype=float)[~np.isnan(
         np.array(datasetWeight[pelicula], dtype=float))]) for pelicula in datasetWeight.columns}
@@ -75,4 +81,8 @@ def recomendar(datasetSelectBox, usuario, caso):
         pelicula: resultados[pelicula] for pelicula in peliculasNocalificadas}
     ordenPeliculasNoCalificadas = {pelicula: score for pelicula, score in sorted(
         diccionarioPeliculasNoCalificadas.items(), key=lambda item: item[1], reverse=True)[:5]}
-    return pd.DataFrame({"Peliculas": [valor for valor in ordenPeliculasNoCalificadas], "Rating": [ordenPeliculasNoCalificadas[pelicula] for pelicula in ordenPeliculasNoCalificadas]})
+    resultadoRetornar = pd.DataFrame({"Peliculas": [valor for valor in ordenPeliculasNoCalificadas], "Rating": [
+                                     ordenPeliculasNoCalificadas[pelicula] for pelicula in ordenPeliculasNoCalificadas]})
+    # Eliminar filas con valores solo nan
+    resultadoRetornar.dropna(axis=0, inplace=True)
+    return resultadoRetornar

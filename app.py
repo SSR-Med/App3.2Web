@@ -67,4 +67,8 @@ elif choose == "Usuario y recomendaciones":
     if st.button("Recomendaciones"):
         dataFrameResultado = recomendacionColaborativa.recomendar(
             usuarios, usuariosBox, datasetsDisponibles)
-        st.dataframe(dataFrameResultado)
+        if dataFrameResultado.empty == True:
+            st.write(
+                "Nuestro sistema no ha detectado ninguna recomendación, ¡eres un sujeto especial y no existe algún usuario similar a ti!")
+        else:
+            st.dataframe(dataFrameResultado)
